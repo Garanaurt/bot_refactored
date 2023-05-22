@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from money.cryptobot import CryptoPay
 from keyboards.kb_main_m import kb_main_menu, kb_get_buy_button, kb_confirm_buy, kb_go_to_main_menu
 from keyboards.kb_main_m import kb_balance_menu_keyboard, kb_processing_keyboard, kb_back_to_main
-from keyboards.kb_main_m import kb_cancel_but, kb_cryptopay_keyboard
+from keyboards.kb_main_m import kb_cancel_but, kb_cryptopay_keyboard, kb_location_key_but, kb_back_to_products
 import re
 from bot import db
 
@@ -46,11 +46,24 @@ async def main_menu(call: types.CallbackQuery):
 
 @router.callback_query(lambda c: c.data == "get_products")
 async def get_products(call: types.CallbackQuery):
-    products = db.db_get_all_products()
+    msg = 'Наличие по районам: \n'
+    locations = db.db_get_loc_where_product_now_count()
+    for key, val in locations.items():
+        msg += f"{key[0]} - {val[0]} шт\n"
+    await call.message.answer(text = f"{msg}", reply_markup=kb_location_key_but(locations.keys()))
+    await call.message.answer(text = 'На главную', reply_markup=kb_back_to_main())
+
+
+@router.callback_query(lambda c: re.match(r'^show_prod_.*$', c.data))
+async def show_prod_on_location(call: types.CallbackQuery):
+    loc = call.data.split('_')[2]
+    loc_id = db.db_get_location_id(loc)
+    print(loc_id)
+    products = db.db_get_products_where_location(loc_id[0])
     for p in products: 
-        await call.message.answer(f'==========\nНазвание: {p[1]}\nВес: {p[2]}\nЛокация: {p[3]}\
+        await call.message.answer(f'==========\nНазвание: {p[1]}\nВес: {p[2]}\nЛокация: {loc}\
                                  \nЦена: {p[4]}', reply_markup=kb_get_buy_button(p))
-    await call.message.answer('Вернуться', reply_markup=kb_back_to_main())
+    await call.message.answer('Вернуться', reply_markup=kb_back_to_products())
         
 
 @router.callback_query(lambda c: re.match(r'^buy_prod_\d+$', c.data))
@@ -163,9 +176,13 @@ async def profile(call: types.CallbackQuery):
     usr_inf = db.db_get_user_info(user_id)
     user_purchase = db.db_get_user_purchase(user_id)
     for i in user_purchase:
-        msg += f'{i[1]} - {i[3]}\n'
+        prod = db.db_get_product_info(i[1])
+        msg += f'==========\nID: {prod[0][0]}\
+            \nНазвание: {prod[0][1]}\nВес: {prod[0][2]}\
+                                 \nЦена: {prod[0][4]}\nКуплено: {i[2]}'
+
     await call.message.answer(f"Ваше имя: {usr_inf[1]}\nВаш баланс: {usr_inf[2]}\
-                              \nДата регистрации: {usr_inf[-1]}\n{msg}")
+                              \nДата регистрации: {usr_inf[-1]} \n{msg}", reply_markup=kb_back_to_main())
 
 
     

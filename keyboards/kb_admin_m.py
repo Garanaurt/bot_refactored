@@ -16,6 +16,7 @@ def kb_get_main_products_menu():
         [types.InlineKeyboardButton(text='Добавить локацию', callback_data='add_location')],
         [types.InlineKeyboardButton(text='Денежки', callback_data='balance')],
         [types.InlineKeyboardButton(text='История покупок', callback_data='history')],
+        [types.InlineKeyboardButton(text='Пользователи', callback_data='users')],
          ]  
     kb = types.InlineKeyboardMarkup(inline_keyboard=keys)
     return kb
@@ -52,5 +53,13 @@ def kb_get_add_location_button():
     keys = [
         [types.InlineKeyboardButton(text='Добавить локацию', callback_data='add_location')],
          ]  
+    kb = types.InlineKeyboardMarkup(inline_keyboard=keys)
+    return kb
+
+
+def kb_ban_button(user_id):
+    keys = [
+        [types.InlineKeyboardButton(text='Забанить', callback_data=f'ban_{user_id}')],
+    ]
     kb = types.InlineKeyboardMarkup(inline_keyboard=keys)
     return kb

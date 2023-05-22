@@ -2,7 +2,7 @@ from aiogram import Router, Bot
 from aiogram import types
 from aiogram.filters import Command
 from aiogram.filters.state import State, StatesGroup
-from keyboards.kb_admin_m import kb_get_add_location_button, kb_get_main_menu, kb_get_main_products_menu, kb_delete_button, kb_go_to_products, kb_cancel_but
+from keyboards.kb_admin_m import kb_get_add_location_button, kb_get_main_menu, kb_get_main_products_menu, kb_delete_button, kb_go_to_products, kb_cancel_but, kb_ban_button
 from admin import db, ADMIN_LIST
 from aiogram.fsm.context import FSMContext
 from aiogram import F
@@ -223,7 +223,20 @@ async def history_purchases(call: types.CallbackQuery):
         mess += f'{i}\n '
     await call.message.answer(text=mess, reply_markup=kb_go_to_products())
 
+@router.callback_query(lambda c: c.data == "users")
+async def user_menu(call: types.CallbackQuery):
+    users  = db.db_get_all_users()
+    print(users)
+    for user in users:
+        await call.message.answer(f'Имя - {user[1]}\nБаланс - {user[2]}\nРегистрация - {user[3]}\nЗабанен - {user[4]} ', reply_markup=kb_ban_button(user[0]))
 
+
+@router.callback_query(lambda c: re.match(r'^ban_\d+$', c.data))
+async def ban_user(call: types.CallbackQuery):
+    id = call.data.split('_')[1]
+    db.db_ban_user(id)
+    
+    
 
     
 

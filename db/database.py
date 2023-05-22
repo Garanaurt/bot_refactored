@@ -13,6 +13,19 @@ class DbShop:
         print('Database was closed')
         self.conn.close()
 
+
+    def db_get_products_where_location(self, id):
+        self.cursor.execute("SELECT * FROM products WHERE location_id = ? AND bought_at = FALSE",(id,))
+        result = self.cursor.fetchall()
+        return result
+
+
+    def db_get_all_users(self):
+        self.cursor.execute('SELECT * FROM users')
+        result = self.cursor.fetchall()
+        return result
+
+
     def db_get_all_products(self):
         self.cursor.execute('SELECT * FROM products WHERE bought_at = FALSE')
         self.result = self.cursor.fetchall()
@@ -33,6 +46,12 @@ class DbShop:
             print('To DB added new user')
 
 
+    def db_ban_user(self, user_id):
+        self.cursor.execute("UPDATE users SET banned = TRUE WHERE id = ?",(user_id,))
+        self.conn.commit()
+        print(f'User {user_id} was banned')
+
+
     def db_get_full_list_location(self):
         self.cursor.execute("SELECT * FROM locations")
         self.result = self.cursor.fetchall()
@@ -51,6 +70,12 @@ class DbShop:
             return True
         except sqlite3.IntegrityError:
             return False
+        
+    
+    def db_get_location_id(self, name):
+        self.cursor.execute("SELECT id FROM locations WHERE location = ?",(name,))
+        result = self.cursor.fetchone()
+        return result
         
 
     def db_get_location_name(self, id):
@@ -85,12 +110,12 @@ class DbShop:
     
     def db_get_loc_where_product_now_count(self):
         loc_name_count = {}
-        self.cursor.execute('SELECT location_id FROM products')
+        self.cursor.execute('SELECT location_id FROM products WHERE bought_at = FALSE')
         self.loc_ids_list = self.cursor.fetchall()
         for i in self.loc_ids_list:
             self.cursor.execute(f"SELECT location FROM locations WHERE id = (?)", (i[0],))
             name = self.cursor.fetchone()
-            self.cursor.execute(f"SELECT COUNT(*) FROM products WHERE location_id = (?)", (i[0],))
+            self.cursor.execute(f"SELECT COUNT(*) FROM products WHERE location_id = (?) AND bought_at = FALSE", (i[0],))
             count = self.cursor.fetchone()
             loc_name_count[name] = count
         return loc_name_count
@@ -149,7 +174,8 @@ class DbShop:
                 id INTEGER PRIMARY KEY,
                 username TEXT,
                 balance INTEGER DEFAULT 0,
-                registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                banned BOOLEAN DEFAULT FALCE,
             )''')
         self.conn.commit()
         print('Table users was created')

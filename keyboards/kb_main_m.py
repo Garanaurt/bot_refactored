@@ -46,6 +46,14 @@ def kb_back_to_main():
     kb = types.InlineKeyboardMarkup(inline_keyboard=keys)
     return kb
 
+def kb_back_to_products():
+    keys = [
+        [types.InlineKeyboardButton(text="К товарам", callback_data="get_products")],
+         ]  
+    kb = types.InlineKeyboardMarkup(inline_keyboard=keys)
+    return kb
+
+
 def kb_balance_menu_keyboard():
     keys = [
         [types.InlineKeyboardButton(text='CryptoBot', callback_data='crypto_bot')],
@@ -69,5 +77,12 @@ def kb_cryptopay_keyboard(inv_id, inv_sum):
         [types.InlineKeyboardButton(text='Оплачено', callback_data=f'paid_{inv_id}_{inv_sum}')],
         [types.InlineKeyboardButton(text='Отмена', callback_data="cancel_adding")]
     ]
+    kb = types.InlineKeyboardMarkup(inline_keyboard=keys)
+    return kb
+
+def kb_location_key_but(loc_list):
+    keys = []
+    for loc in loc_list:
+        keys.append([types.InlineKeyboardButton(text=f'{loc[0]}', callback_data=f'show_prod_{loc[0]}')])
     kb = types.InlineKeyboardMarkup(inline_keyboard=keys)
     return kb
