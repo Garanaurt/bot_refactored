@@ -6,7 +6,7 @@ This guide provides instructions for installing and running a Python program. Pl
 
 Clone the repository containing the Python program to your local machine using the following command:
 
-git clone <>
+```git clone https://github.com/Garanaurt/bot_refactored.git```
 
 
 
@@ -14,7 +14,7 @@ git clone <>
 
 Navigate to the project directory and install the required dependencies by running the following command:
 
-pip install -r requirements.txt
+```pip install -r requirements.txt```
 
 
 Make sure you have [Python](https://www.python.org/) and [pip](https://pip.pypa.io/) installed on your system.
@@ -33,18 +33,24 @@ TOKEN = "<your_bot_token>"
 # Path to the database
 DATABASE = '<path_to.db>'
 
+#cryptopaybot tocken
+CR_TOKEN = "<tocken from bot>"
+```
+
 
 ### Step 4: Configure User Data
 
 
-To run the Python program, execute the following command:
+To run the admin_bot program, execute the following command:
 
-python main.py 
+```python admin.py ```
+
+To run the shop_bot program, execute the following command:
+
+```python bot.py```
 
 Ensure that you are in the project directory where the admin.py file is located.
 
 Step 5: Interact with the Telegram Bot
 
 Once the program is running, you can interact with the Telegram bot using the configured commands and functionality.
-
-That's it! You have successfully installed and started the Python program. Follow the program-specific instructions for further usage and customization.
