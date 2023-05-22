@@ -51,6 +51,6 @@ To run the shop_bot program, execute the following command:
 
 Ensure that you are in the project directory where the admin.py file is located.
 
-Step 5: Interact with the Telegram Bot
+### Step 5: Interact with the Telegram Bot
 
 Once the program is running, you can interact with the Telegram bot using the configured commands and functionality.
