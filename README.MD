@@ -44,13 +44,10 @@ SHOP_TOKEN_BOT = "5756085358:AAEboc6ZRK1pkgCnB1hDL_WTNlUqlTDWNg0"
 ### Step 4: Configure User Data
 
 
-To run the admin_bot program, execute the following command:
+To run the bot program parts of user and admin, execute the following command:
 
 ```python admin.py ```
 
-To run the shop_bot program, execute the following command:
-
-```python bot.py```
 
 Ensure that you are in the project directory where the admin.py file is located.
 
