@@ -27,8 +27,13 @@ async def main():
     dpt = Dispatcher()
     dpt.include_routers(hd_main.router)
     await bot_s.delete_webhook(drop_pending_updates=True)
-    await dpt.start_polling(bot_s, bot)
 
+    tasks = [
+        asyncio.create_task(dp.start_polling(bot)),
+        asyncio.create_task(dpt.start_polling(bot_s))
+    ]
+    
+    await asyncio.gather(*tasks)
 
     db.db_close_conn()
 

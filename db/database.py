@@ -18,6 +18,12 @@ class DbShop:
         self.cursor.execute("SELECT * FROM products WHERE location_id = ? AND bought_at = FALSE",(id,))
         result = self.cursor.fetchall()
         return result
+    
+
+    def db_get_all_products_where_location(self, id):
+        self.cursor.execute("SELECT * FROM products WHERE location_id = ?",(id,))
+        result = self.cursor.fetchall()
+        return result
 
 
     def db_get_all_users(self):
@@ -56,6 +62,20 @@ class DbShop:
         self.cursor.execute("SELECT banned FROM users WHERE id = ?",(user_id,))
         result = self.cursor.fetchone()
         return result
+    
+
+    def db_get_products_name_where_location(self, loc_id):
+        self.cursor.execute("SELECT name FROM products WHERE location_id = ? AND bought_at = FALSE",(loc_id,))
+        result = self.cursor.fetchall()
+        return result
+    
+
+
+    
+    def db_unban_user(self, user_id):
+        self.cursor.execute("UPDATE users SET banned = FALSE WHERE id = ?",(user_id,))
+        self.conn.commit()
+        print(f'User {user_id} was unban')
 
 
     def db_get_full_list_location(self):
@@ -63,6 +83,13 @@ class DbShop:
         self.result = self.cursor.fetchall()
         return self.result
     
+
+    def db_get_full_list_location_name(self):
+        self.cursor.execute("SELECT name FROM locations")
+        self.result = self.cursor.fetchall()
+        return self.result
+    
+
     def db_location_ids_list(self):
         self.cursor.execute("SELECT id FROM locations")
         self.result = self.cursor.fetchall()
@@ -88,6 +115,12 @@ class DbShop:
         self.cursor.execute("SELECT location FROM locations WHERE id = (?)",(id,))
         result = self.cursor.fetchone()
         return result
+    
+
+    def db_delete_location(self, id):
+        self.cursor.execute("DELETE FROM locations WHERE id = ?", (id,))
+        self.conn.commit()
+
     
     def db_delete_product(self, id):
         self.cursor.execute("DELETE FROM products WHERE id = ?", (id,))
@@ -181,7 +214,7 @@ class DbShop:
                 username TEXT,
                 balance INTEGER DEFAULT 0,
                 registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                banned BOOLEAN DEFAULT FALCE,
+                banned BOOLEAN DEFAULT FALSE
             )''')
         self.conn.commit()
         print('Table users was created')

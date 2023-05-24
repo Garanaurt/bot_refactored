@@ -2,7 +2,9 @@ from aiogram import Router, Bot
 from aiogram import types
 from aiogram.filters import Command
 from aiogram.filters.state import State, StatesGroup
-from keyboards.kb_admin_m import kb_get_add_location_button, kb_get_main_menu, kb_get_main_products_menu, kb_delete_button, kb_go_to_products, kb_cancel_but, kb_ban_button
+from keyboards.kb_admin_m import kb_get_add_location_button, kb_get_main_menu, kb_get_main_products_menu 
+from keyboards.kb_admin_m import kb_delete_button, kb_go_to_products, kb_cancel_but, kb_ban_button
+from keyboards.kb_admin_m import kb_unban_button, kb_go_to_start, kb_location_del
 from user_data import ADMIN_LIST
 from dbss import db
 from aiogram.fsm.context import FSMContext
@@ -23,6 +25,13 @@ class AddProductStates(StatesGroup):
     PRICE = State()
     IMAGE1 = State()
     IMAGE2 = State()
+
+
+def yes_no(i):
+    if i == 1:
+        return "Да"
+    else:
+        return "Нет"
 
 @router.callback_query(lambda c: c.data == "cancel_adding")
 async def cancel_adding(call: types.CallbackQuery, state: FSMContext):
@@ -95,7 +104,22 @@ async def locations_list(call: types.CallbackQuery):
     msg = ''
     for l in locations:
         msg += f'{l[1]}, '
-    await call.message.answer(f"Добавленные локации: {msg}")
+    await call.message.answer(f"Добавленные локации: {msg}", reply_markup=kb_location_del(locations))
+    await call.message.answer('Вернуться', reply_markup=kb_go_to_products())
+
+
+@router.callback_query(lambda c: re.match(r'^del_loc_\d+$', c.data))
+async def buy_product(call: types.CallbackQuery):
+    id = call.data.split('_')[2]
+    prod_in_loc = db.db_get_all_products_where_location(id)
+    if prod_in_loc:
+        await call.message.answer("В этой локации есть товары, удаление невозможно")
+    else:
+        db.db_delete_location(id)
+        await call.answer("Удалено")
+        await locations_list(call)
+    await call.message.answer('Вернуться', reply_markup=kb_go_to_products())
+
 
 
 #Adding location
@@ -142,7 +166,7 @@ async def process_weight(message: types.Message, state: FSMContext):
     if not weight.isdigit():
         await message.answer("Введите вес товара числом. Пожалуйста, попробуйте еще раз:", reply_markup=kb_cancel_but())
         return
-    await state.update_data(weight=message.text)
+    await state.update_data(weight=int(weight))
     await state.set_state(AddProductStates.LOCATION)
     locations = db.db_get_full_list_location()
     for i in locations:
@@ -171,8 +195,8 @@ async def process_weight(message: types.Message, state: FSMContext):
 @router.message(AddProductStates.PRICE, F.text)
 async def process_weight(message: types.Message, state: FSMContext):
     price = message.text
-    if not price.isdigit():
-        await message.answer("Введите цену товара числом. Пожалуйста, попробуйте еще раз:", reply_markup=kb_cancel_but())
+    if not price.isdigit() or int(price) <= 0:
+        await message.answer("Цена должна быть числом больше 0, попробуйте еще раз:", reply_markup=kb_cancel_but())
         return
     await state.update_data(price=message.text)
     await state.set_state(AddProductStates.IMAGE1)
@@ -221,7 +245,10 @@ async def history_purchases(call: types.CallbackQuery):
     mess = f'Список покупок:\n'
     result  = db.db_get_purchases()
     for i in result:
-        mess += f'{i}\n '
+        user_name = db.db_get_user_info(i[0])
+        prod = db.db_get_product_info(i[1])
+        loc = db.db_get_location_name(prod[0][3])
+        mess += f'Пользователь {user_name[1]} купил {prod[0][2]}гр {prod[0][1]} в {loc[0]}, дата - {i[2]}\n'
     await call.message.answer(text=mess, reply_markup=kb_go_to_products())
 
 @router.callback_query(lambda c: c.data == "users")
@@ -229,13 +256,32 @@ async def user_menu(call: types.CallbackQuery):
     users  = db.db_get_all_users()
     print(users)
     for user in users:
-        await call.message.answer(f'Имя - {user[1]}\nБаланс - {user[2]}\nРегистрация - {user[3]}\nЗабанен - {user[4]} ', reply_markup=kb_ban_button(user[0]))
-
+        if user[4] == 0:
+            await call.message.answer(f'Имя - {user[1]}\
+                                      \nБаланс - {user[2]}\nРегистрация - {user[3]}\
+                                      \nЗабанен - {yes_no(user[4])} ', 
+                                      reply_markup=kb_ban_button(user[0]))
+        else:
+            await call.message.answer(f'Имя - {user[1]}\nБаланс - {user[2]}\nРегистрация - {user[3]}\
+                                      \nЗабанен - {yes_no(user[4])} ', 
+                                      reply_markup=kb_unban_button(user[0]))
+    await call.message.answer('Назад', reply_markup= kb_go_to_products())
 
 @router.callback_query(lambda c: re.match(r'^ban_\d+$', c.data))
 async def ban_user(call: types.CallbackQuery):
     id = call.data.split('_')[1]
     db.db_ban_user(id)
+    name = db.db_get_user_info(id)
+    await call.message.answer(f'Пользователь {name[1]} был забанен')
+    await user_menu(call)
+
+@router.callback_query(lambda c: re.match(r'^unban_\d+$', c.data))
+async def unban_user(call: types.CallbackQuery):
+    id = call.data.split('_')[1]
+    db.db_unban_user(id)
+    name = db.db_get_user_info(id)
+    await call.message.answer(f'Пользователь {name[1]} был разбанен')
+    await user_menu(call)
 
     
 
