@@ -1,8 +1,7 @@
 import asyncio
 from aiogram import Bot, Dispatcher
 from handlers import hd_admin, hd_main
-from db.database import DbShop
-import os
+from dbss import db
 from user_data import ADMIN_LIST, ADMIN_TOKEN, DATABASE, SHOP_TOKEN_BOT
 
 #list of admins telegram user_id
@@ -13,18 +12,6 @@ TOKEN = ADMIN_TOKEN
 db_path = DATABASE
 #token for user bot
 SHOP_TOKEN = SHOP_TOKEN_BOT
-
-
-
-#check and create db and tables
-db = DbShop()
-if not os.path.exists(db_path):
-    db.db_path = db_path
-    db.db_initialize()
-    db.db_check_and_create_tables()
-    db.db_close_conn()
-db.db_path = db_path
-db.db_initialize()
 
 
 #start bot

@@ -7,7 +7,7 @@ from keyboards.kb_main_m import kb_main_menu, kb_get_buy_button, kb_confirm_buy,
 from keyboards.kb_main_m import kb_balance_menu_keyboard, kb_processing_keyboard, kb_back_to_main
 from keyboards.kb_main_m import kb_cancel_but, kb_cryptopay_keyboard, kb_location_key_but, kb_back_to_products
 import re
-from bot import db
+from dbss import db
 
 
 router = Router()

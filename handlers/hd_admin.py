@@ -3,7 +3,8 @@ from aiogram import types
 from aiogram.filters import Command
 from aiogram.filters.state import State, StatesGroup
 from keyboards.kb_admin_m import kb_get_add_location_button, kb_get_main_menu, kb_get_main_products_menu, kb_delete_button, kb_go_to_products, kb_cancel_but, kb_ban_button
-from admin import db, ADMIN_LIST
+from user_data import ADMIN_LIST
+from dbss import db
 from aiogram.fsm.context import FSMContext
 from aiogram import F
 from money.cryptobot import CryptoPay
@@ -235,7 +236,7 @@ async def user_menu(call: types.CallbackQuery):
 async def ban_user(call: types.CallbackQuery):
     id = call.data.split('_')[1]
     db.db_ban_user(id)
-    
+
     
 
     
