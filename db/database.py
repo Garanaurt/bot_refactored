@@ -52,6 +52,12 @@ class DbShop:
         print(f'User {user_id} was banned')
 
 
+    def check_ban_user(self, user_id):
+        self.cursor.execute("SELECT banned FROM users WHERE id = ?",(user_id,))
+        result = self.cursor.fetchone()
+        return result
+
+
     def db_get_full_list_location(self):
         self.cursor.execute("SELECT * FROM locations")
         self.result = self.cursor.fetchall()

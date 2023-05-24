@@ -32,8 +32,12 @@ async def cmd_start(message: types.Message):
 async def star(message: types.Message):
     username = message.from_user.username
     user_id = message.from_user.id
-    db.db_check_and_create_user(user_id, username)
-    await message.answer(f'В магазин', reply_markup = kb_go_to_main_menu())
+    res = db.check_ban_user(user_id)
+    if res[0] == 0:
+        db.db_check_and_create_user(user_id, username)
+        await message.answer(f'В магазин', reply_markup = kb_go_to_main_menu())
+    else: 
+        await message.answer(f'{username}, ты забанен')
 
 @router.callback_query(lambda c: c.data == "main_menu")
 async def main_menu(call: types.CallbackQuery):

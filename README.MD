@@ -27,14 +27,17 @@ Create a file named `user_data.py` in the project directory. Open the file and d
 # List of admin user IDs
 ADMIN_LIST = ['<user_id>', ]
 
-# Telegram bot token
-TOKEN = "<your_bot_token>"
+# Telegram bot token 
+ADMIN_TOKEN = "<your_bot_token>"
 
 # Path to the database
 DATABASE = '<path_to.db>'
 
 #cryptopaybot tocken
 CR_TOKEN = "<tocken from bot>"
+
+#shop bot token
+SHOP_TOKEN_BOT = "5756085358:AAEboc6ZRK1pkgCnB1hDL_WTNlUqlTDWNg0"
 ```
 
 
