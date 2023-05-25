@@ -232,7 +232,7 @@ class DbShop:
             );""")
         self.conn.commit()
         print('Table products was created')
-        self.cursor.execute("""CREATE TABLE locations (
+        self.cursor.execute("""CREATE TABLE IF NOT EXISTS locations (
             id INTEGER PRIMARY KEY,
             location TEXT,
             UNIQUE (location)

@@ -1,3 +1,4 @@
+
 import asyncio
 from aiogram import Bot, Dispatcher
 from handlers import hd_admin, hd_main
@@ -32,11 +33,13 @@ async def main():
         asyncio.create_task(dp.start_polling(bot)),
         asyncio.create_task(dpt.start_polling(bot_s))
     ]
-    
+
+   
+
     await asyncio.gather(*tasks)
 
+    
     db.db_close_conn()
-
 
 
 if __name__ == "__main__":

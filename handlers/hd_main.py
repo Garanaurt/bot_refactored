@@ -54,11 +54,15 @@ async def get_products(call: types.CallbackQuery):
     res = db.check_ban_user(user_id)
     if res[0] == 0:
         msg = 'Наличие по районам: \n'
+        
         locations = db.db_get_loc_where_product_now_count()
         for key, val in locations.items():
             loc_id = db.db_get_location_id(key[0])
             name_prod = db.db_get_products_name_where_location(loc_id[0])
-            msg += f"{key[0]} - {val[0]} шт {name_prod[0]}\n"
+            l=''
+            for name in name_prod:
+                l += f'{name[0]}, '
+            msg += f"{key[0]} - {val[0]} шт, товары: {l}\n"
         await call.message.edit_text(text = f"{msg}", reply_markup=kb_location_key_but(locations.keys()))
         await call.message.answer(text = 'На главную', reply_markup=kb_back_to_main())
     else: 

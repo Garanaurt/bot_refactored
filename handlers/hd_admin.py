@@ -77,7 +77,9 @@ async def get_lite_list(call: types.CallbackQuery):
 async def product_list(call: types.CallbackQuery):
     res = db.db_get_all_products()
     for i in res:
-        loc = db.db_get_location_name(i[0])
+        print(i)
+        loc = db.db_get_location_name(i[3])
+        print(loc)
         await call.message.answer(f'-----start-----\nID: {i[0]}\nНазвание: {i[1]} \
                                   \nВес: {i[2]}\nЛокация: {loc[0]}\nЦена: {i[4]} \
                                   \nДата добавления: {i[-1]}')
@@ -188,7 +190,8 @@ async def process_weight(message: types.Message, state: FSMContext):
     if int(location_id) not in check or not location_id.isdigit():
         await message.answer('Укажите существующий айди!', reply_markup=kb_cancel_but())
         return
-    await state.update_data(location_id=message.text)
+    await state.update_data(location_id=location_id)
+
     await state.set_state(AddProductStates.PRICE)
     await message.answer("Введите цену товара:", reply_markup=kb_cancel_but())
 
